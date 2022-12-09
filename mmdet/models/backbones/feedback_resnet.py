@@ -14,8 +14,8 @@ class FBConnection(nn.Module):
     def __init__(self, kernel=3, activation=F.relu, neighborhood=5, alpha=0.0001):
         super(FBConnection, self).__init__()
         self.activation = activation
-        self.up = nn.Upsample(scale_factor=32)
-        self.conv = nn.Conv2d(2048, 3, kernel, padding=1)
+        self.up = nn.Upsample(scale_factor=8)
+        self.conv = nn.Conv2d(2048, 64, kernel, padding=1)
         self.lrn = nn.LocalResponseNorm(neighborhood, alpha, 0.5, 1.0)
         
     def forward(self, xs):
@@ -29,16 +29,35 @@ class FeedbackResNet(nn.Module):
 
     def __init__(self, **kwargs):
         super(FeedbackResNet, self).__init__()
+        # resnet = ResNet(**kwargs)
+        # resnet_layers = nn.ModuleList(resnet.children())
+        # self.stem = resnet_layers[:4]
+        # self.resnet = resnet_layers[5:]
         self.resnet = ResNet(**kwargs)
         self.fb_con = FBConnection()
 
-    def forward(self, input):
+    def forward(self, x):
+        # stem layer 1x
+        x = self.resnet.conv1(x)
+        x = self.resnet.norm1(x)
+        x = self.resnet.relu(x)
+        x = self.resnet.maxpool(x)
+
+        def _forward_stages(x):
+            outs = []
+            for i, layer_name in enumerate(self.resnet.res_layers):
+                res_layer = getattr(self.resnet, layer_name)
+                x = res_layer(x)
+                if i in self.resnet.out_indices:
+                    outs.append(x)
+            return tuple(outs)
+
+        # Stages 1-4 3x with feedback
         stage_outputs=[]
-        b, c, size_y, size_x  = input.shape
-        feedback = torch.zeros((1,3,size_y,size_x))
+        feedback = torch.zeros(x.size(), device=x.device)
         for i in range(3):
-            input = modulate(input, feedback)
-            stage_outputs = self.resnet(input)
+            x = modulate(x, feedback)
+            stage_outputs = _forward_stages(x)
             feedback = self.fb_con(stage_outputs[-1])
         return tuple(stage_outputs)
 

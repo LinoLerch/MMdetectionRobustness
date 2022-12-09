@@ -1,0 +1,54 @@
+=================================================================
+Layer (type:depth-idx)                   Param #
+=================================================================
+├─FeedbackResNet: 1-1                    --
+|    └─ResNet: 2-1                       --
+|    |    └─Conv2d: 3-1                  (9,408)
+|    |    └─BatchNorm2d: 3-2             (128)
+|    |    └─ReLU: 3-3                    --
+|    |    └─MaxPool2d: 3-4               --
+|    |    └─ResLayer: 3-5                (215,808)
+|    |    └─ResLayer: 3-6                1,219,584
+|    |    └─ResLayer: 3-7                7,098,368
+|    |    └─ResLayer: 3-8                14,964,736
+|    └─FBConnection: 2-2                 --
+|    |    └─Upsample: 3-9                --
+|    |    └─Conv2d: 3-10                 55,299
+|    |    └─LocalResponseNorm: 3-11      --
+├─FPN: 1-2                               --
+|    └─ModuleList: 2-3                   --
+|    |    └─ConvModule: 3-12             65,792
+|    |    └─ConvModule: 3-13             131,328
+|    |    └─ConvModule: 3-14             262,400
+|    |    └─ConvModule: 3-15             524,544
+|    └─ModuleList: 2-4                   --
+|    |    └─ConvModule: 3-16             590,080
+|    |    └─ConvModule: 3-17             590,080
+|    |    └─ConvModule: 3-18             590,080
+|    |    └─ConvModule: 3-19             590,080
+├─RPNHead: 1-3                           --
+|    └─CrossEntropyLoss: 2-5             --
+|    └─L1Loss: 2-6                       --
+|    └─Conv2d: 2-7                       590,080
+|    └─Conv2d: 2-8                       771
+|    └─Conv2d: 2-9                       3,084
+├─StandardRoIHead: 1-4                   --
+|    └─SingleRoIExtractor: 2-10          --
+|    |    └─ModuleList: 3-20             --
+|    └─Shared2FCBBoxHead: 2-11           --
+|    |    └─CrossEntropyLoss: 3-21       --
+|    |    └─L1Loss: 3-22                 --
+|    |    └─Linear: 3-23                 21,525
+|    |    └─Linear: 3-24                 82,000
+|    |    └─ModuleList: 3-25             --
+|    |    └─ModuleList: 3-26             13,895,680
+|    |    └─ModuleList: 3-27             --
+|    |    └─ModuleList: 3-28             --
+|    |    └─ModuleList: 3-29             --
+|    |    └─ModuleList: 3-30             --
+|    |    └─ReLU: 3-31                   --
+=================================================================
+Total params: 41,500,855
+Trainable params: 41,275,511
+Non-trainable params: 225,344
+=================================================================
