@@ -6,6 +6,7 @@ model = dict(
     roi_head=dict(bbox_head=dict(num_classes=20)),
     backbone=dict(
         type='FeedbackResNet',
+        frozen_stages=-1 #None,
     ) )
 # optimizer
 optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
@@ -16,3 +17,5 @@ lr_config = dict(policy='step', step=[3])
 # runtime settings
 runner = dict(
     type='EpochBasedRunner', max_epochs=4)  # actual epoch = 4 * 3 = 12
+# Save best model
+evaluation = dict(save_best='auto')
