@@ -19,3 +19,5 @@ runner = dict(
     type='EpochBasedRunner', max_epochs=4)  # actual epoch = 4 * 3 = 12
 # Save best model
 evaluation = dict(save_best='auto')
+# Load pretrained model
+load_from = 'checkpoints/faster_rcnn_r50fb_fpn_1x_voc0712_20221208.pth'
