@@ -14,9 +14,10 @@ optimizer_config = dict(grad_clip=None)
 # learning policy
 # actual epoch = 3 * 3 = 9
 lr_config = dict(policy='step', step=[3])
+auto_scale_lr = dict(enable=True, base_batch_size=16)
 # runtime settings
 runner = dict(
-    type='EpochBasedRunner', max_epochs=5)  # actual epoch = 4 * 3 = 12
+    type='EpochBasedRunner', max_epochs=4)  # actual epoch = 4 * 3 = 12
 # Save best model
 evaluation = dict(save_best='auto')
 # Load pretrained model
