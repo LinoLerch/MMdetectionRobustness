@@ -7,7 +7,8 @@ model = dict(
     backbone=dict(
         type='FeedbackResNet',
         feedback_type='add',
-        frozen_stages=-1 #None,
+        frozen_stages=-1, #-1 means none
+        init_cfg=None
     ) )
 # optimizer
 optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
