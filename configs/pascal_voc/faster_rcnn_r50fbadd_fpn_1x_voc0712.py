@@ -18,8 +18,8 @@ optimizer_config = dict(grad_clip=None)
 lr_config = dict(policy='step', step=[3])
 # runtime settings
 runner = dict(
-    type='EpochBasedRunner', max_epochs=5)  # actual epoch = 4 * 3 = 12
+    type='EpochBasedRunner', max_epochs=8)  # actual epoch = 4 * 3 = 12
 # Save best model
-evaluation = dict(save_best='auto')
+#evaluation = dict(save_best='auto')
 # Load pretrained model
 load_from = 'checkpoints/faster_rcnn_r50fb_fpn_1x_voc0712_20221208.pth'
