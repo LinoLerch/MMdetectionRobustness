@@ -32,3 +32,26 @@ Aggregated results:
 
 model: robustnessBM_fb-mod_snow_results.pkl
 Mean Performance under Corruption [mPC] in AP50 = 0.073
+
+
+========================= Job ID: 21635126 =============================
+Test on gpu_4 - 10/01
+--corruptions 'holdout' (validation corruptions)
+
+Aggregated results:
+
+model: rob-bm_fb-mod_results.pkl
+Mean Performance under Corruption [mPC] in AP50 = 0.571
+
+Job Wall-clock time: 01:51:33
+
+========================= Job ID: 21640558 =============================
+Test on gpu_4 - 13/01
+--corruptions 'holdout' (validation corruptions)
+
+Aggregated results:
+
+model: rob-bm_fb-add_results.pkl
+Mean Performance under Corruption [mPC] in AP50 = 0.560
+
+Job Wall-clock time: 01:43:03

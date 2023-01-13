@@ -17,10 +17,7 @@ PY_ARGS=${@:7}
 PYTHONPATH="$(dirname $0)/..":$PYTHONPATH \
 sbatch -p ${PARTITION} \
     --job-name=${JOB_NAME} \
-    --gres=gpu:${GPUS_PER_NODE} \
-    --ntasks=${GPUS} \
-    --ntasks-per-node=${GPUS_PER_NODE} \
-    --cpus-per-task=${CPUS_PER_TASK} \
+    --gres=gpu:1 \
     --time=${TIME} \
     ${SRUN_ARGS} \
-    ./tools/robust_benchmark.sh ${CONFIG} ${CHECKPOINT} ${OUT} 
+    ./tools/robust_benchmark.sh ${CONFIG} ${CHECKPOINT} ${OUT}
