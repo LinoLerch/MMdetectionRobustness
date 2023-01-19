@@ -55,3 +55,14 @@ model: rob-bm_fb-add_results.pkl
 Mean Performance under Corruption [mPC] in AP50 = 0.560
 
 Job Wall-clock time: 01:43:03
+
+============================= JOB FEEDBACK =============================
+Test on gpu_4 - 13/01
+--corruptions 'holdout' (validation corruptions)
+
+Aggregated results:
+
+model: rob-bm_ff-baseline_results.pkl
+Mean Performance under Corruption [mPC] in AP50 = 0.591
+
+Job Wall-clock time: 01:00:57
