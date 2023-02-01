@@ -22,7 +22,8 @@ class FBConnection(nn.Module):
     def forward(self, xs):
         x = self.up(xs)
         x = self.conv(x)
-        x = self.lrn(self.activation(x))
+        x = self.activation(x)
+        x = self.lrn(x)
         return x
 
 @BACKBONES.register_module()
