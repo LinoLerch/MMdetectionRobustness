@@ -251,6 +251,7 @@ def main():
     tpfp_out = {}
     for corr_i, corruption in enumerate(corruptions):
         aggregated_results[corruption] = {}
+        tpfp_out[corruption] = {}
         for sev_i, corruption_severity in enumerate(args.severities):
             # evaluate severity 0 (= no corruption) only once
             if corr_i > 0 and corruption_severity == 0:
@@ -325,23 +326,21 @@ def main():
                 mmcv.dump(outputs, args.out)
                 eval_types = args.eval
                 if cfg.dataset_type == 'VOCDataset':
-                    if eval_types:
-                        for eval_type in eval_types:
-                            if eval_type != 'bbox':
-                                print('\nOnly "bbox" evaluation \
-                                is supported for pascal voc')
+                    if eval_types and eval_types != ['bbox']:
+                        print('\nOnly "bbox" evaluation \
+                        is supported for pascal voc')
 
-                            test_dataset = mmcv.runner.obj_from_dict(
-                                cfg.data.test, datasets)
-                            logger = 'print' if args.summaries else None
-                            mean_ap, eval_results, tpfp_list = \
-                                voc_eval_with_return(
-                                    args.out, test_dataset,
-                                    args.iou_thr, logger)
-                            aggregated_results[corruption][
-                                corruption_severity] = eval_results
-                            tpfp_out[corruption][
-                                corruption_severity] = tpfp_list
+                    test_dataset = mmcv.runner.obj_from_dict(
+                        cfg.data.test, datasets)
+                    logger = 'print' if args.summaries else None
+                    mean_ap, eval_results, tpfp_list = \
+                        voc_eval_with_return(
+                            args.out, test_dataset,
+                            args.iou_thr, logger)
+                    aggregated_results[corruption][
+                        corruption_severity] = eval_results
+                    tpfp_out[corruption][
+                        corruption_severity] = tpfp_list
                 else:
                     if eval_types:
                         print(f'Starting evaluate {" and ".join(eval_types)}')
