@@ -663,8 +663,7 @@ def eval_map(det_results,
                                          & (gt_areas < max_area))
         # save true/false positive list before sorting
         tpfp_list.append({
-            'tp': tp,
-            'fp': fp
+            'tp': tp
         })
         # sort all det bboxes by score, also sort tp and fp
         cls_dets = np.vstack(cls_dets)

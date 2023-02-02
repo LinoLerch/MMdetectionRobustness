@@ -209,7 +209,9 @@ def main():
     # set random seeds
     if args.seed is not None:
         set_random_seed(args.seed)
-
+    
+    
+    print('args corruptions: ',args.corruptions)
     if 'all' in args.corruptions:
         corruptions = [
             'gaussian_noise', 'shot_noise', 'impulse_noise', 'defocus_blur',
@@ -244,6 +246,8 @@ def main():
         args.severities = [0]
     else:
         corruptions = args.corruptions
+    
+    print('corruptions: ',corruptions)
 
     rank, _ = get_dist_info()
     aggregated_results = {}

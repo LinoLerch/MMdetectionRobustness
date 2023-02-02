@@ -5,7 +5,11 @@ CHECKPOINT=$2
 OUT=$3
 #CORR=${CORR:-'fog'}
 #SEV=${SEV:-2 3}
-CORR=${CORR:-'holdout'}
+
+#CORR=${CORR:-'holdout'}
+#CORR=${CORR:-'benchmark'}
+CORR=${CORR:-'shot_noise impulse_noise defocus_blur glass_blur motion_blur zoom_blur snow frost fog brightness contrast elastic_transform pixelate jpeg_compression'}
+
 SEV=${SEV:-0 1 2 3 4 5}
 
 #pwd; ls -l  > dir_pwd.txt
@@ -17,8 +21,12 @@ python -Wignore tools/analysis_tools/test_robustness.py \
     $CONFIG \
     $CHECKPOINT \
     --out=$OUT \
-    --corruptions=$CORR \
+    --corruptions $CORR  \
     --eval bbox \
     --summaries True \
     --severities $SEV \
+    --final-prints P mPC rPC
+    
+#    --corruptions=$CORR \
 #    --launcher slurm 
+#{shot_noise,impulse_noise,defocus_blur,motion_blur,zoom_blur,snow,frost,fog,brightness,contrast,elastic_transform,pixelate,jpeg_compression}
