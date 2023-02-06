@@ -8,7 +8,13 @@ OUT=$3
 
 #CORR=${CORR:-'holdout'}
 #CORR=${CORR:-'benchmark'}
-CORR=${CORR:-'shot_noise impulse_noise defocus_blur glass_blur motion_blur zoom_blur snow frost fog brightness contrast elastic_transform pixelate jpeg_compression'}
+#CORR=${CORR:-'shot_noise impulse_noise defocus_blur glass_blur motion_blur zoom_blur snow frost fog brightness contrast elastic_transform pixelate jpeg_compression'}
+
+# FF-baseline  fb_add
+#CORR=${CORR:-'motion_blur zoom_blur snow frost fog brightness contrast elastic_transform pixelate jpeg_compression'}
+
+# fb_mod
+CORR=${CORR:-'snow frost fog brightness contrast elastic_transform pixelate jpeg_compression'}
 
 SEV=${SEV:-0 1 2 3 4 5}
 
@@ -27,6 +33,4 @@ python -Wignore tools/analysis_tools/test_robustness.py \
     --severities $SEV \
     --final-prints P mPC rPC
     
-#    --corruptions=$CORR \
-#    --launcher slurm 
-#{shot_noise,impulse_noise,defocus_blur,motion_blur,zoom_blur,snow,frost,fog,brightness,contrast,elastic_transform,pixelate,jpeg_compression}
+#    --launcher slurm
