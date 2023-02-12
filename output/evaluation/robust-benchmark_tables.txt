@@ -71,32 +71,20 @@ Job Wall-clock time: 01:00:57
 ----------------------- Full Robustness Benchmark --------------------
 
 --------FF Baseline--------
-corruptions:  ['motion_blur', 'zoom_blur', 'snow', 'frost', 'fog', 'brightness', 'contrast', 'elastic_transform', 'pixelate', 'jpeg_compression']
-
-Aggregated results:
-
-model: rob-bm-full-3_ff-baseline_results.pkl
+model: rob-bm-merged_ff-baseline_results.pkl
 Performance on Clean Data [P] in AP50 = 0.801
-Mean Performance under Corruption [mPC] in AP50 = 0.541
-Relative Performance under Corruption [rPC] in % = 67.0
+Mean Performance under Corruption [mPC] in AP50 = 0.489
+Relative Performance under Corruption [rPC] in % = 60.5
 
 --------FB Add--------
-corruptions:  ['motion_blur', 'zoom_blur', 'snow', 'frost', 'fog', 'brightness', 'contrast', 'elastic_transform', 'pixelate', 'jpeg_compression']
-
-Aggregated results:
-
-model: rob-bm-full-3_fb-add_results.pkl
+model: rob-bm-merged_fb-add_results.pkl
 Performance on Clean Data [P] in AP50 = 0.803
-Mean Performance under Corruption [mPC] in AP50 = 0.513
-Relative Performance under Corruption [rPC] in % = 63.3
+Mean Performance under Corruption [mPC] in AP50 = 0.457
+Relative Performance under Corruption [rPC] in % = 56.3
 
 --------FF Mod--------
-corruptions:  ['snow', 'frost', 'fog', 'brightness', 'contrast', 'elastic_transform', 'pixelate', 'jpeg_compression']
-
-Aggregated results:
-
-model: rob-bm-full-3_fb-mod_results.pkl
+model: rob-bm-merged_fb-mod_results.pkl
 Performance on Clean Data [P] in AP50 = 0.806
-Mean Performance under Corruption [mPC] in AP50 = 0.567
-Relative Performance under Corruption [rPC] in % = 69.8
+Mean Performance under Corruption [mPC] in AP50 = 0.468
+Relative Performance under Corruption [rPC] in % = 57.5
 
