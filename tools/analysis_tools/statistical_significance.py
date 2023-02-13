@@ -1,6 +1,7 @@
 import argparse
 import mmcv
 import numpy as np
+import pandas as pd
 
 from mmdet.datasets import build_dataset
 
@@ -9,7 +10,9 @@ def parse_args():
         description='Statisical significance test')
     parser.add_argument('tpfp1', help='path to TruePos-FalsePos List of model 1')
     parser.add_argument('tpfp2', help='path to TruePos-FalsePos List of model 2')
+    parser.add_argument('tpfp3', help='path to TruePos-FalsePos List of model 3')
     parser.add_argument('config', help='test config file path')
+    parser.add_argument('names', type=str, nargs='+', help='names of the three models')
     # parser.add_argument('save_dir', help='directory where results will be saved')
 
     args = parser.parse_args()
@@ -46,8 +49,22 @@ def model_confusion_matrix(tpfp1, tpfp2, dataset):
             confusion_mat[1,0] += 1
         else:
             confusion_mat[1,1] += 1
-        
+
     return confusion_mat
+
+def print_results(confusion_mat, n1, n2):
+
+    # convert to a pandas DataFrame and add sum at the end of columns/rows
+    df = pd.DataFrame(confusion_mat, columns=[f'{n2}-C', f'{n2}-W'], index=[f'{n1}-C', f'{n1}-W'], dtype=int)
+    df.loc['sum'] = df.sum()
+    df['sum'] = df.sum(axis=1)
+
+    # calculate accuracies 
+    sum_imgs = df['sum']['sum']
+    acc2 = round((df[f'{n2}-C']['sum'] / sum_imgs), 4)
+    acc1 = round((df['sum'][f'{n1}-C'] / sum_imgs), 4)
+        
+    print(f'\n {n1} vs. {n2}: \n {df} \n  Accuracy: {n1}:{acc1}, {n2}:{acc2}\n')
 
 def main():
     args = parse_args()
@@ -56,9 +73,17 @@ def main():
     dataset = build_dataset(cfg.data.test)
     tpfp1 = mmcv.load(args.tpfp1)
     tpfp2 = mmcv.load(args.tpfp2)
+    tpfp3 = mmcv.load(args.tpfp3)
+    name1, name2, name3 = args.names
 
-    confusion_mat = model_confusion_matrix(tpfp1, tpfp2, dataset)
-    print(confusion_mat)
+    confusion_mat1 = model_confusion_matrix(tpfp1, tpfp2, dataset)
+    print_results(confusion_mat1, name1, name2)
+
+    confusion_mat2 = model_confusion_matrix(tpfp1, tpfp3, dataset)
+    print_results(confusion_mat2, name1, name3)
+    
+    confusion_mat3 = model_confusion_matrix(tpfp2, tpfp3, dataset)
+    print_results(confusion_mat3, name2, name3)
 
 
 if __name__ == '__main__':
