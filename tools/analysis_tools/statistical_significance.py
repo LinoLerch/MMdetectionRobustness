@@ -2,6 +2,7 @@ import argparse
 import mmcv
 import numpy as np
 import pandas as pd
+import scipy.stats as stats
 
 from mmdet.datasets import build_dataset
 
@@ -64,7 +65,27 @@ def print_results(confusion_mat, n1, n2):
     acc2 = round((df[f'{n2}-C']['sum'] / sum_imgs), 4)
     acc1 = round((df['sum'][f'{n1}-C'] / sum_imgs), 4)
         
-    print(f'\n {n1} vs. {n2}: \n {df} \n  Accuracy: {n1}:{acc1}, {n2}:{acc2}\n')
+    print(f'-------------------------\n {n1} vs. {n2}: \n {df} \n  Accuracy: {n1}:{acc1}, {n2}:{acc2}\n')
+    mcnemar(confusion_mat)
+
+def mcnemar(confusion_mat):
+    b = confusion_mat[0,1]
+    c = confusion_mat[1,0]
+    chi_square = (abs(b - c) - 1)**2 / (b + c)
+    p_value = 1 - stats.chi2.cdf(chi_square, 1)
+
+    # significance level
+    alpha = 0.01
+
+    if p_value <= alpha:
+        conclusion = "Null Hypothesis rejected."
+    else: 
+        conclusion = "Failed to reject the null hypothesis."
+
+    print(f"McNemar's chi^2 statistic is: {round(chi_square,4)} and p value is: {round(p_value,6)}")
+    print(conclusion)
+
+
 
 def main():
     args = parse_args()
