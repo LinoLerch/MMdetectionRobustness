@@ -19,37 +19,45 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def model_confusion_matrix(tpfp1, tpfp2, dataset):
+def model_confusion_matrix(tpfp1_dict, tpfp2_dict, dataset):
     """Calculate the confusion matrix comparing model 1 and 2.
 
     Args:
-        tpfp1   (np.ndarray): TruePos-FalsePos list of model 1
-        tpfp2   (np.ndarray): TruePos-FalsePos list of model 2
+        tpfp1   (dict): TruePos-FalsePos dict of model 1
+        tpfp2   (dict): TruePos-FalsePos dict of model 2
         dataset (mmcv.Dataset): dataset for ground truth
     """
     confusion_mat = np.zeros(shape=(2,2))
 
-    for idx, (tp1_img, tp2_img)  in enumerate(zip(tpfp1, tpfp2)):
-        # ground truth
-        ann = dataset.get_ann_info(idx)
-        #gt_bboxes = ann['bboxes']
-        gt_labels = ann['labels']
-        gt_count = len(gt_labels)
-        
-        tp1, fp1 = tp1_img
-        im1_correct = (tp1 == gt_count and fp1 == 0)
-        
-        tp2, fp2 = tp2_img
-        im2_correct = (tp2 == gt_count and fp2 == 0)
+    # loop through all corruptions in dict
+    for corr in tpfp1_dict:
+        tpfp1 = tpfp1_dict[corr]
+        tpfp2 = tpfp2_dict[corr]
 
-        if im1_correct & im2_correct:
-            confusion_mat[0,0] += 1
-        elif im1_correct & ~im2_correct:
-            confusion_mat[0,1] += 1
-        elif ~im1_correct & im2_correct:
-            confusion_mat[1,0] += 1
-        else:
-            confusion_mat[1,1] += 1
+        # loop through all images for one corruption
+        for idx, (tp1_img, tp2_img)  in enumerate(zip(tpfp1, tpfp2)):
+            # ground truth
+            ann = dataset.get_ann_info(idx)
+            #gt_bboxes = ann['bboxes']
+            gt_labels = ann['labels']
+            gt_count = len(gt_labels)
+            
+            tp1, fp1 = tp1_img
+            #im1_correct = (tp1 == gt_count and fp1 == 0)
+            im1_correct = (tp1 == gt_count)
+            
+            tp2, fp2 = tp2_img
+            #im2_correct = (tp2 == gt_count and fp2 == 0)
+            im2_correct = (tp2 == gt_count)
+
+            if im1_correct & im2_correct:
+                confusion_mat[0,0] += 1
+            elif im1_correct & ~im2_correct:
+                confusion_mat[0,1] += 1
+            elif ~im1_correct & im2_correct:
+                confusion_mat[1,0] += 1
+            else:
+                confusion_mat[1,1] += 1
 
     return confusion_mat
 
@@ -82,8 +90,8 @@ def mcnemar(confusion_mat):
     else: 
         conclusion = "Failed to reject the null hypothesis."
 
-    print(f"McNemar's chi^2 statistic is: {round(chi_square,4)} and p value is: {round(p_value,6)}")
-    print(conclusion)
+    print(f"McNemar's chi-squared statistic is: {round(chi_square,4)} and p value is: {round(p_value,8)}")
+    print(f"{conclusion} (significance level: {alpha})")
 
 
 
