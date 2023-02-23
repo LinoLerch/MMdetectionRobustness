@@ -574,7 +574,7 @@ def eval_map(det_results,
             which only used in OpenImages evaluation. Default: False.
 
     Returns:
-        tuple: (mAP, [dict, dict, ...])
+        tuple: (mAP, [dict, dict, ...], [dict, dict, ...])
     """
     assert len(det_results) == len(annotations)
     if not use_legacy_coordinate:
@@ -596,6 +596,7 @@ def eval_map(det_results,
         pool = Pool(nproc)
 
     eval_results = []
+    tpfp_list = []
     for i in range(num_classes):
         # get gt and det bboxes of this class
         cls_dets, cls_gts, cls_gts_ignore = get_cls_results(
@@ -660,6 +661,10 @@ def eval_map(det_results,
                 for k, (min_area, max_area) in enumerate(area_ranges):
                     num_gts[k] += np.sum((gt_areas >= min_area)
                                          & (gt_areas < max_area))
+        # save true/false positive list before sorting
+        tpfp_list.append({
+            'tp': tp
+        })
         # sort all det bboxes by score, also sort tp and fp
         cls_dets = np.vstack(cls_dets)
         num_dets = cls_dets.shape[0]
@@ -711,7 +716,7 @@ def eval_map(det_results,
     print_map_summary(
         mean_ap, eval_results, dataset, area_ranges, logger=logger)
 
-    return mean_ap, eval_results
+    return mean_ap, eval_results, tpfp_list
 
 
 def print_map_summary(mean_ap,

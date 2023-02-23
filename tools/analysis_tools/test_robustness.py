@@ -74,7 +74,7 @@ def voc_eval_with_return(result_file,
         dataset_name = 'voc07'
     else:
         dataset_name = dataset.CLASSES
-    mean_ap, eval_results = eval_map(
+    mean_ap, eval_results, tpfp_list = eval_map(
         det_results,
         annotations,
         scale_ranges=None,
@@ -87,7 +87,7 @@ def voc_eval_with_return(result_file,
             'ap': eval_results[i]['ap']
         } for i in range(len(eval_results))]
 
-    return mean_ap, eval_results
+    return mean_ap, eval_results, tpfp_list
 
 
 def parse_args():
@@ -209,7 +209,9 @@ def main():
     # set random seeds
     if args.seed is not None:
         set_random_seed(args.seed)
-
+    
+    
+    print('args corruptions: ',args.corruptions)
     if 'all' in args.corruptions:
         corruptions = [
             'gaussian_noise', 'shot_noise', 'impulse_noise', 'defocus_blur',
@@ -244,11 +246,16 @@ def main():
         args.severities = [0]
     else:
         corruptions = args.corruptions
+    
+    print('corruptions: ',corruptions)
 
     rank, _ = get_dist_info()
     aggregated_results = {}
+    # List of the True/False positive detections 
+    tpfp_out = {}
     for corr_i, corruption in enumerate(corruptions):
         aggregated_results[corruption] = {}
+        tpfp_out[corruption] = {}
         for sev_i, corruption_severity in enumerate(args.severities):
             # evaluate severity 0 (= no corruption) only once
             if corr_i > 0 and corruption_severity == 0:
@@ -303,7 +310,7 @@ def main():
                     show_dir = osp.join(show_dir, corruption)
                     show_dir = osp.join(show_dir, str(corruption_severity))
                     if not osp.exists(show_dir):
-                        osp.makedirs(show_dir)
+                        os.makedirs(show_dir)
                 outputs = single_gpu_test(model, data_loader, args.show,
                                           show_dir, args.show_score_thr)
             else:
@@ -317,24 +324,27 @@ def main():
                 eval_results_filename = (
                     osp.splitext(args.out)[0] + '_results' +
                     osp.splitext(args.out)[1])
+                tpfp_filename = (
+                    osp.splitext(args.out)[0] + '_tpfp' +
+                    osp.splitext(args.out)[1])
                 mmcv.dump(outputs, args.out)
                 eval_types = args.eval
                 if cfg.dataset_type == 'VOCDataset':
-                    if eval_types:
-                        for eval_type in eval_types:
-                            if eval_type == 'bbox':
-                                test_dataset = mmcv.runner.obj_from_dict(
-                                    cfg.data.test, datasets)
-                                logger = 'print' if args.summaries else None
-                                mean_ap, eval_results = \
-                                    voc_eval_with_return(
-                                        args.out, test_dataset,
-                                        args.iou_thr, logger)
-                                aggregated_results[corruption][
-                                    corruption_severity] = eval_results
-                            else:
-                                print('\nOnly "bbox" evaluation \
-                                is supported for pascal voc')
+                    if eval_types and eval_types != ['bbox']:
+                        print('\nOnly "bbox" evaluation \
+                        is supported for pascal voc')
+
+                    test_dataset = mmcv.runner.obj_from_dict(
+                        cfg.data.test, datasets)
+                    logger = 'print' if args.summaries else None
+                    mean_ap, eval_results, tpfp_list = \
+                        voc_eval_with_return(
+                            args.out, test_dataset,
+                            args.iou_thr, logger)
+                    aggregated_results[corruption][
+                        corruption_severity] = eval_results
+                    tpfp_out[corruption][
+                        corruption_severity] = tpfp_list
                 else:
                     if eval_types:
                         print(f'Starting evaluate {" and ".join(eval_types)}')
@@ -360,8 +370,9 @@ def main():
                         print('\nNo task was selected for evaluation;'
                               '\nUse --eval to select a task')
 
-                # save results after each evaluation
+                # save results + true/false positive list after each evaluation
                 mmcv.dump(aggregated_results, eval_results_filename)
+                mmcv.dump(tpfp_out, tpfp_filename)
 
     if rank == 0:
         # print final results
